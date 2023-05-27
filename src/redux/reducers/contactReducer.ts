@@ -1,33 +1,42 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 interface Contact {
-    id: number;
-    name: string;
-    email: string;
-  }
-  
-  interface ContactState {
-    contacts: Contact[];
-  }
-  
-  const initialState: ContactState = {
-    contacts: [],
-  };
-  
-  const contactReducer = (state = initialState, action: any) => {
-    switch (action.type) {
-      case 'ADD_CONTACT':
-        return {
-          ...state,
-          contacts: [...state.contacts, action.payload],
-        };
-      case 'DELETE_CONTACT':
-        return {
-          ...state,
-          contacts: state.contacts.filter((contact) => contact.id !== action.payload),
-        };
-      default:
-        return state;
-    }
-  };
-  
-  export default contactReducer;
-  
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface ContactsState {
+  contacts: Contact[];
+}
+
+const initialState: ContactsState = {
+  contacts: [],
+};
+
+const contactsSlice = createSlice({
+  name: 'contacts',
+  initialState,
+  reducers: {
+    addContact: (state, action: PayloadAction<Contact>) => {
+      state.contacts.push(action.payload);
+      localStorage.setItem('contacts', JSON.stringify(state.contacts));
+    },
+    editContact: (state, action: PayloadAction<Contact>) => {
+      const { id } = action.payload;
+      const existingContact = state.contacts.find(contact => contact.id === id);
+      if (existingContact) {
+        Object.assign(existingContact, action.payload);
+        localStorage.setItem('contacts', JSON.stringify(state.contacts));
+      }
+    },
+    deleteContact: (state, action: PayloadAction<number>) => {
+      state.contacts = state.contacts.filter(contact => contact.id !== action.payload);
+      localStorage.setItem('contacts', JSON.stringify(state.contacts));
+    },
+  },
+});
+
+export const { addContact, editContact, deleteContact } = contactsSlice.actions;
+
+export default contactsSlice.reducer;

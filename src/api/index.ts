@@ -1,16 +1,3 @@
-import { useQuery } from 'react-query';
-
-export const fetchContacts = async () => {
-  const response = await fetch('https://api.example.com/contacts');
-  if (!response.ok) {
-    throw new Error('Error fetching contacts');
-  }
-  return response.json();
-};
-
-export const useContacts = () => {
-  return useQuery('contacts', fetchContacts);
-};
 
 export const fetchChartData = async () => {
     const response = await fetch(
