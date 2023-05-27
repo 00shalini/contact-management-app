@@ -1,64 +1,65 @@
 import React, { useState ,useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addContact, editContact, deleteContact } from '../redux/reducers/contactReducer';
+import ContactList from '../Components/ContactList';
+import ContactForm from '../Components/ContactForm';
+
+interface Contact {
+  id: number;
+  name: string;
+  email: string;
+}
 
 function ContactsPage() {
   const contacts = useSelector((state : any) => state.contacts.contacts);
+  
   const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
- 
-  useEffect(() => {
-    const storedContacts = JSON.parse(localStorage.getItem('contacts') || '[]');
-    const newContacts = storedContacts.filter((storedContact: any) =>
-    contacts.every((contact: any) => contact.id !== storedContact.id)
-  );
-  newContacts.forEach((contact: any) => dispatch(addContact(contact)));
-
-  }, [dispatch]);
-
-  const handleAddContact = () => {
-    const newContact = {
-      id: Date.now(),
-      name,
-      email,
-    };
-    dispatch(addContact(newContact));
-    setName('');
-    setEmail('');
-  };
+  const [showForm, setShowForm] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   const handleEditContact = (contact : any) => {
-    const updatedContact = {
-      ...contact,
-      name,
-      email,
-    };
-    dispatch(editContact(updatedContact));
-    setName('');
-    setEmail('');
+    //console.log(contact)
+    setSelectedContact(contact);
+
   };
 
   const handleDeleteContact = (contactId : number) => {
     dispatch(deleteContact(contactId));
   };
 
+  const handleFormSubmit = (formData: any) => {
+    if (selectedContact) {
+      // If a contact is selected, update it
+      const updatedContact = { ...selectedContact, ...formData };
+      dispatch(editContact(updatedContact));
+      setSelectedContact(null);
+    } else {
+      // If no contact is selected, add a new contact
+      dispatch(addContact(formData));
+    }
+  };
+
+  const handleFormCancel = () => {
+    setSelectedContact(null);
+  };
+
   return (
     <div>
       <h1>Contact Management</h1>
-      <div>
-        <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-        <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <button onClick={handleAddContact}>Add Contact</button>
-      </div>
-      {contacts.map((contact:any) => (
-        <div key={contact.id}>
-          <p>Name: {contact.name}</p>
-          <p>Email: {contact.email}</p>
-          <button onClick={() => handleEditContact(contact)}>Edit</button>
-          <button onClick={() => handleDeleteContact(contact.id)}>Delete</button>
-        </div>
-      ))}
+      {selectedContact && (
+        <ContactForm
+          contact={selectedContact}
+          onSubmit={handleFormSubmit}
+          onCancel={handleFormCancel}
+        />
+      )}
+       {!selectedContact && (
+      <ContactForm onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+       )}
+      <ContactList contacts={contacts} handleDeleteContact={handleDeleteContact} handleEditContact={handleEditContact}/>
+      
     </div>
   );
 }
