@@ -42,8 +42,10 @@ function DashboardMap({ data }: DashboardMapProps) {
     
     if (storeddata) {
       setTimeout(() => {
-      setStoredData(JSON.parse(storeddata)); // Retrieve data from localStorage
+      setStoredData(JSON.parse(storeddata));
+ // Retrieve data from localStorage
     }, 3000);
+    
     }
   }, []);
 
