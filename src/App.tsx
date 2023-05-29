@@ -5,6 +5,7 @@ import ContactsPage from './Pages/ContactsPage';
 import DashboardPage from './Pages/DashboardPage';
 import Navbar from './Components/Navbar';
 
+
 function App() {
   return (
     <Router>
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<ContactsPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        
       </Routes>
     </Router>
   );

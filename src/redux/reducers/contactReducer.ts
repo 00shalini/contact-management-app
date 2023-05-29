@@ -1,42 +1,58 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// src/reducers/contactReducer.ts
 
-interface Contact {
-  id: number;
-  name: string;
-  email: string;
-}
+import { Contact } from "../types/types";
+import {
+  ContactActionTypes,
+  ADD_CONTACT,
+  EDIT_CONTACT,
+  DELETE_CONTACT,
+} from "../actions/contactActions";
 
-interface ContactsState {
+export interface ContactState {
+  contact: any;
+  selectedContact: any;
   contacts: Contact[];
+  
 }
 
-const initialState: ContactsState = {
+const initialState: ContactState = {
   contacts: [],
+  selectedContact: [],
+  contact: []
 };
 
-const contactsSlice = createSlice({
-  name: 'contacts',
-  initialState,
-  reducers: {
-    addContact: (state, action: PayloadAction<Contact>) => {
-      state.contacts.push(action.payload);
-      //localStorage.setItem('contacts', JSON.stringify(state.contacts));
-    },
-    editContact: (state, action: PayloadAction<Contact>) => {
-      const { id } = action.payload;
-      const existingContact = state.contacts.find(contact => contact.id === id);
-      if (existingContact) {
-        Object.assign(existingContact, action.payload);
-        //localStorage.setItem('contacts', JSON.stringify(state.contacts));
-      }
-    },
-    deleteContact: (state, action: PayloadAction<number>) => {
-      state.contacts = state.contacts.filter(contact => contact.id !== action.payload);
-      //localStorage.setItem('contacts', JSON.stringify(state.contacts));
-    },
-  },
-});
+const contactReducer = (
+  state = initialState,
+  action: ContactActionTypes
+): ContactState => {
+  switch (action.type) {
+    case ADD_CONTACT:
+      return {
+        ...state,
+        contacts: [...state.contacts, action.payload],
+      };
+    case EDIT_CONTACT:
+  
+      return {
+        
+        ...state,
+        
+        contact: state.contacts.map((contact) =>
+          contact.id === action.payload.id ? action.payload : contact
+        ),
+       
+      };
+    case DELETE_CONTACT:
+      return {
+        ...state,
+        contacts: state.contacts.filter(
+          (contact) => contact.id !== action.payload
+        ),
+        
+      };
+    default:
+      return state;
+  }
+};
 
-export const { addContact, editContact, deleteContact } = contactsSlice.actions;
-
-export default contactsSlice.reducer;
+export default contactReducer;

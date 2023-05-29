@@ -1,59 +1,101 @@
-import React, {useState,useEffect} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { addContact, editContact, deleteContact } from '../redux/reducers/contactReducer';
+// components/ContactForm.tsx
 
-type ContactFormProps = {
-  contact?: Contact;
-  onSubmit: (formData: any) => void;
-  onCancel: () => void;
-};
+import React, { useEffect, useState } from "react";
+import { connect, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { Contact } from "../redux/types/types";
+import { addContact, deleteContact, editContact } from "../redux/actions/contactActions";
 
-function ContactForm({contact , onSubmit,onCancel}: ContactFormProps) {
+interface ContactFormProps {
+  addContact: (contact: Contact) => void;
+  editContact: (contact: Contact) => void;
+  deleteContact: (id: string) => void;
+  selectedContact?: Contact[];
+  contact: Contact[]
+}
 
-  const dispatch = useDispatch();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-
+const ContactForm: React.FC<ContactFormProps> = ({
+  addContact,
+  editContact,
+  selectedContact,
+  contact,
+  deleteContact
+}) => {
+  console.log(contact);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  var editedContact = contact;
+  console.log(editedContact)
   useEffect(() => {
-    if (contact) {
-      setName(contact.name);
-      setEmail(contact.email);
+    if (editedContact.length> 0) {
+      setName(editedContact[0]?.name);
+      setEmail(editedContact[0]?.email);
+      setPhone(editedContact[0]?.phone);
     }
-  }, [contact]);
+  },[editedContact[0]]);
 
-
-  const handleSaveContact = () => {
-    const formData = {
-      id: contact ? contact.id : Date.now(),
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const contact: Contact = {
+      id: editedContact[0]?.id ?  editedContact[0].id:  String(Date.now()),
       name,
       email,
+      phone,
     };
 
-    if (contact) {
-      // Dispatch editContact action if editing an existing contact
-      dispatch(editContact(formData));
+    if (editedContact[0]?.id) {
+      console.log(contact);
+      deleteContact(editedContact[0]?.id)
+      addContact(contact);
     } else {
-      // Dispatch addContact action if adding a new contact
-      dispatch(addContact(formData));
+      addContact(contact);
+      setName("");
+      setEmail("");
+      setPhone("");
     }
-
-    // Clear the form fields
-    setName('');
-    setEmail('');
-
-    // Call the onSubmit callback to notify the parent component
-    onSubmit(formData);
   };
 
   return (
     <div>
-        <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-        <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <button onClick={handleSaveContact}>{contact ? 'Update Contact' : 'Add Contact'}</button>
-        <button onClick={onCancel}>Cancel</button>
-      </div>
+      <h2>{contact.length > 0 ? "Edit Contact" : "Add Contact"}</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Name:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Phone:</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </div>
+        <button type="submit">
+          {contact.length > 0 ? "Save Changes" : "Add Contact"}
+        </button>
+      </form>
+    </div>
   );
-}
+};
 
-export default ContactForm;
+const mapStateToProps = (state: RootState) => ({
+  selectedContact: state?.contact?.selectedContact,
+});
+
+export default connect(mapStateToProps, { addContact, editContact, deleteContact })(
+  ContactForm
+);

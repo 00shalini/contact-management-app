@@ -1,33 +1,58 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+// components/ContactList.tsx
 
-// interface Contact {
-//   id: number;
-//   name: string;
-//   email: string;
-// }
+import React from "react";
+import { connect } from "react-redux";
+import { RootState } from "../redux/store";
+import { Contact } from "../redux/types/types";
+import { deleteContact ,editContact } from "../redux/actions/contactActions";
 
-// interface ContactListProps {
-//   contacts: Contact[];
-// }
+interface ContactListProps {
+  contacts: Contact[];
+  deleteContact: (id: string) => void;
+  editContact: (contact: Contact) => void;
+}
 
-function ContactList({ contacts, handleDeleteContact,handleEditContact }: any) {
-
+const ContactList: React.FC<ContactListProps> = ({
+  contacts,
+  deleteContact,
+  editContact,
+}) => {
+  const handleDelete = (id: string) => {
+    deleteContact(id);
+  };
+  const handleEdit = (contact: Contact) => {
+    console.log(contact);
+    editContact(contact);
+  };
   return (
     <div>
       <h2>Contact List</h2>
-      <ul>
-        {contacts.map((contact: any) => (
-          <div key={contact.id}>
-          <p>Name: {contact.name}</p>
-          <p>Email: {contact.email}</p>
-          <button onClick={() => handleEditContact(contact)}>Edit</button>
-          <button onClick={() => handleDeleteContact(contact.id)}>Delete</button>
-        </div>
-        ))}
-      </ul>
+      {contacts.length === 0 ? (
+        <p>No contacts available.</p>
+      ) : (
+        <ul>
+          {contacts.map((contact) => (
+            <li key={contact.id}>
+              <div>
+                <strong>{contact.name}</strong>
+              </div>
+              <div>Email: {contact.email}</div>
+              <div>Phone: {contact.phone}</div>
+              <button onClick={() => handleEdit(contact)}>Edit</button>
+              <button onClick={() => handleDelete(contact.id)}>
+                Delete
+              </button>
+              {/* Add button or link to view/edit contact details */}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
-}
+};
 
-export default ContactList;
+const mapStateToProps = (state: RootState) => ({
+  contacts: state.contacts,
+});
+
+export default connect(mapStateToProps, { deleteContact ,editContact})(ContactList);
