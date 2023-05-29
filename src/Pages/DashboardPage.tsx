@@ -17,7 +17,7 @@ function DashboardPage() {
     )
     
   }
-  console.log(chartData,mapData)
+  
   return (
     <div>
       <h1 className="text-center w-screen h-20 pt-5 text-white font-bold text-4xl font-mono bg-teal-950">Dashboard</h1>
