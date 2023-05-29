@@ -1,5 +1,6 @@
 
 export const fetchChartData = async () => {
+  
     const response = await fetch(
       'https://disease.sh/v3/covid-19/historical/all?lastdays=all'
     );

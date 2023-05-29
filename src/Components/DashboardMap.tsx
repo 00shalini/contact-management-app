@@ -1,42 +1,84 @@
-import React from 'react';
+import L from 'leaflet';
+import React, { useEffect, useRef ,useState} from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
-
-interface MapData {
-  map(arg0: (country: any) => import("react/jsx-runtime").JSX.Element): React.ReactNode;
-  // Map data structure
+interface CountryData {
+  country: string;
+  countryInfo: {
+    lat: number;
+    long: number;
+  };
+  active: number;
+  recovered: number;
+  deaths: number;
 }
 
-
 interface DashboardMapProps {
-  data: MapData;
+  data: CountryData[];
 }
 
 function DashboardMap({ data }: DashboardMapProps) {
-  console.log(data);
-  return   (  
-  <div>
-  {data ? (
-     <MapContainer style={{ height: '400px', width: '100%' }} center={[0, 0]} zoom={2}>
-     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-     {data.map((country) => (
-       <Marker key={country.country} position={[country.countryInfo.lat, country.countryInfo.long]}>
-         <Popup>
-           <div>
-             <h2>{country.country}</h2>
-             <p>Total Active Cases: {country.active}</p>
-             <p>Total Recovered Cases: {country.recovered}</p>
-             <p>Total Deaths: {country.deaths}</p>
-           </div>
-         </Popup>
-       </Marker>
-     ))}
-   </MapContainer>
-  ) : (
-    <p>Loading map data...</p>
-  )}
-</div>)
-;
+  const [isLoading, setIsLoading] = useState(true);
+  const [storedData, setStoredData] = useState<CountryData[]>([]);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      
+      setIsLoading(false);
+      localStorage.setItem('data', JSON.stringify(data)); 
+    }
+  }, [data]);
+  const mapRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (mapRef.current && data?.length> 0) {
+      const bounds = L.latLngBounds(data?.map(country => [country?.countryInfo?.lat, country?.countryInfo?.long]));
+    mapRef.current.fitBounds(bounds);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const storeddata = localStorage.getItem('data');
+    
+    if (storeddata) {
+      setTimeout(() => {
+      setStoredData(JSON.parse(storeddata)); // Retrieve data from localStorage
+    }, 3000);
+    }
+  }, []);
+
+  return (
+    <div>
+    {isLoading ? (
+      <p>Loading map data...</p>
+    ) : (
+      
+      <MapContainer ref={mapRef} style={{ height: '400px', width: '100%',marginLeft:'150px' }}>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        
+        {storedData?.map((country) => {
+         
+          return (
+            <Marker
+            key={country?.country}
+            position={[country?.countryInfo?.lat, country?.countryInfo?.long]}
+          >
+            <Popup>
+              <div>
+                <h2>{country?.country}</h2>
+                <p>Total Active Cases: {country?.active}</p>
+                <p>Total Recovered Cases: {country?.recovered}</p>
+                <p>Total Deaths: {country?.deaths}</p>
+              </div>
+            </Popup>
+          </Marker>
+          )
+         
+})}
+      </MapContainer>
+    )}
+  </div>
+  );
 }
 
 export default DashboardMap;
