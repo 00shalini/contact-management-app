@@ -21,25 +21,24 @@ const ContactList: React.FC<ContactListProps> = ({
     deleteContact(id);
   };
   const handleEdit = (contact: Contact) => {
-    console.log(contact);
     editContact(contact);
   };
   return (
     <div>
-      <h2>Contact List</h2>
+      <h2 className="text-center font-mono text-2xl font-semibold mt-4">Contact List</h2>
       {contacts.length === 0 ? (
-        <p>No contacts available.</p>
+        <p className="text-center fot-mono text-xl ">No contacts available.</p>
       ) : (
-        <ul>
+        <ul className="w-4/5 h-auto ml-28 ">
           {contacts.map((contact) => (
-            <li key={contact.id}>
+            <li key={contact.id} className="ml-28 mt-4 font-mono">
               <div>
-                <strong>{contact.name}</strong>
+               <strong>Name:</strong> {contact.name}
               </div>
-              <div>Email: {contact.email}</div>
-              <div>Phone: {contact.phone}</div>
-              <button onClick={() => handleEdit(contact)}>Edit</button>
-              <button onClick={() => handleDelete(contact.id)}>
+              <div><strong>Email:</strong> {contact.email}</div>
+              <div><strong>Phone:</strong> {contact.phone}</div>
+              <button className="w-32 mr-3 h-8 bg-cyan-900 rounded-md text-white font-mono" onClick={() => handleEdit(contact)}>Edit</button>
+              <button className="w-32 h-8 bg-cyan-900 rounded-md text-white font-mono" onClick={() => handleDelete(contact.id)}>
                 Delete
               </button>
               {/* Add button or link to view/edit contact details */}

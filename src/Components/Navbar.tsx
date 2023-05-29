@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 
 function Navbar() {
   return (
-    <nav>
-        <ul>
-          <li>
+    <nav className='w-56 h-screen bg-teal-950'>
+        <ul className='m-6'>
+          <li className='mb-16 border-b-2 text-lg font-semibold text-white'>
             <Link to="/">Contacts</Link>
           </li>
-          <li>
-            <Link to="/dashboard">Dashboard</Link>
+          <li className='mb-16 border-b-2 text-lg font-semibold text-white'>
+            <Link to="/dashboard">Charts & Maps</Link>
           </li>
         </ul>
       </nav>

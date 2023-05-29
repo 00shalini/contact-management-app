@@ -21,12 +21,12 @@ const ContactForm: React.FC<ContactFormProps> = ({
   contact,
   deleteContact
 }) => {
-  console.log(contact);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   var editedContact = contact;
-  console.log(editedContact)
+
   useEffect(() => {
     if (editedContact.length> 0) {
       setName(editedContact[0]?.name);
@@ -45,7 +45,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
     };
 
     if (editedContact[0]?.id) {
-      console.log(contact);
+
       deleteContact(editedContact[0]?.id)
       addContact(contact);
     } else {
@@ -58,33 +58,36 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
   return (
     <div>
-      <h2>{contact.length > 0 ? "Edit Contact" : "Add Contact"}</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
+      <h2 className="text-center font-mono text-2xl font-semibold">{contact.length > 0 ? "Edit Contact" : "Add Contact"}</h2>
+      <form onSubmit={handleSubmit} className="w-4/5 text-center ml-28 mt-5">
+        <div className="m-5">
+          <label className="m-5 font-mono">Name:</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="w-60 h-8 border-blue-950 outline-teal-900 shadow-2xl"
           />
         </div>
-        <div>
-          <label>Email:</label>
+        <div className="m-5  font-mono">
+          <label className="m-5">Email:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-60 h-8 border-blue-950 outline-teal-900 shadow-2xl"
           />
         </div>
-        <div>
-          <label>Phone:</label>
+        <div className="m-5  font-mono">
+          <label className="m-5">Phone:</label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            className="w-60 h-8 border-blue-950 outline-teal-900 shadow-2xl"
           />
         </div>
-        <button type="submit">
+        <button type="submit" className="w-64 h-8 bg-cyan-900 rounded-md text-white font-mono">
           {contact.length > 0 ? "Save Changes" : "Add Contact"}
         </button>
       </form>
